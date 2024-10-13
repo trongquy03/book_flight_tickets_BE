@@ -34,6 +34,8 @@ public class SecurityConfig {
         httpSecurity.oauth2ResourceServer(oauth2 ->
              oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                      .jwtAuthenticationConverter(jwtConverter()))
+                     //dieu huong user khi fail
+                     .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
          );
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();

@@ -28,7 +28,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     UserRepository userRepository;
