@@ -1,10 +1,6 @@
 package com.springjpa.demoJPA.entity;
 
-import com.springjpa.demoJPA.enums.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -27,5 +23,7 @@ public class User {
     String firstName;
     String lastName;
     LocalDate birthDate;
+
+    @ManyToMany
     Set<Role> roles;
 }

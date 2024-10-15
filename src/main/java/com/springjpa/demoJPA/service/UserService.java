@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         HashSet<Role> roles = new HashSet<>();
         roles.add(Role.USER);
-        user.setRoles(roles);
+      //  user.setRoles(roles);
         return userRepository.save(user);
     }
 
