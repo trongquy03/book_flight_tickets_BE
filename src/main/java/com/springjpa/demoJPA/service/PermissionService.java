@@ -5,6 +5,7 @@ import com.springjpa.demoJPA.dto.response.PermissionResponse;
 import com.springjpa.demoJPA.entity.Permission;
 import com.springjpa.demoJPA.mapper.PermissionMapper;
 import com.springjpa.demoJPA.repository.PermissionRepository;
+import com.springjpa.demoJPA.service.impl.IPermissionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

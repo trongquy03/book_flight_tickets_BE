@@ -13,6 +13,7 @@ import com.springjpa.demoJPA.entity.User;
 import com.springjpa.demoJPA.exception.AppException;
 import com.springjpa.demoJPA.exception.ErrorCode;
 import com.springjpa.demoJPA.repository.UserRepository;
+import com.springjpa.demoJPA.service.impl.IAuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;

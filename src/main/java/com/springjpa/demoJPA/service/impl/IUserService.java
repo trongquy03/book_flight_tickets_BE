@@ -1,9 +1,7 @@
-package com.springjpa.demoJPA.service;
+package com.springjpa.demoJPA.service.impl;
 
-import com.springjpa.demoJPA.dto.request.PermissionRequest;
 import com.springjpa.demoJPA.dto.request.UserCreationRequest;
 import com.springjpa.demoJPA.dto.request.UserUpdateRequest;
-import com.springjpa.demoJPA.dto.response.PermissionResponse;
 import com.springjpa.demoJPA.dto.response.UserResponse;
 import com.springjpa.demoJPA.entity.User;
 
