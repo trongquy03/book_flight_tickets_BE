@@ -1,6 +1,7 @@
 package com.springjpa.demoJPA.dto.response;
 
 
+import com.springjpa.demoJPA.validator.DobConstraint;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,6 +18,8 @@ public class UserResponse {
     String username;
     String firstName;
     String lastName;
+
+    @DobConstraint(min = 18, message = "INVALID_DOB")
     LocalDate birthDate;
     Set<RoleResponse> roles;
 }
