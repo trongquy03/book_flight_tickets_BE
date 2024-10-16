@@ -50,8 +50,10 @@ public class UserController {
     }
 
     @PutMapping("/{userid}")
-    UserResponse updateUser(@RequestBody UserUpdateRequest user, @PathVariable Long userid) {
-        return userService.updateUser(userid, user);
+    ApiResponse<UserResponse> updateUser(@RequestBody UserUpdateRequest user, @PathVariable Long userid) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUser(userid, user))
+                .build();
     }
 
     @DeleteMapping("/{userid}")

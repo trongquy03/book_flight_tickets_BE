@@ -1,6 +1,6 @@
 package com.springjpa.demoJPA.dto.response;
 
-import com.springjpa.demoJPA.enums.Role;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,5 +18,5 @@ public class UserResponse {
     String firstName;
     String lastName;
     LocalDate birthDate;
-    Set<Role> roles;
+    Set<RoleResponse> roles;
 }

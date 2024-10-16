@@ -8,6 +8,7 @@ import com.springjpa.demoJPA.enums.Role;
 import com.springjpa.demoJPA.exception.AppException;
 import com.springjpa.demoJPA.exception.ErrorCode;
 import com.springjpa.demoJPA.mapper.UserMapper;
+import com.springjpa.demoJPA.repository.RoleRepository;
 import com.springjpa.demoJPA.repository.UserRepository;
 import com.springjpa.demoJPA.service.impl.IUserService;
 import lombok.AccessLevel;
@@ -30,6 +31,7 @@ import java.util.List;
 public class UserService implements IUserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     UserRepository userRepository;
+    RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     public User createUser(UserCreationRequest request) {
@@ -67,6 +69,9 @@ public class UserService implements IUserService {
     public UserResponse updateUser(Long id, UserUpdateRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
