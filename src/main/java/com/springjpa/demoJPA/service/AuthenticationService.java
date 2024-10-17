@@ -7,11 +7,14 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.springjpa.demoJPA.dto.request.AuthenticationRequest;
 import com.springjpa.demoJPA.dto.request.IntrospectRequest;
+import com.springjpa.demoJPA.dto.request.LogoutRequest;
 import com.springjpa.demoJPA.dto.response.AuthenticationResponse;
 import com.springjpa.demoJPA.dto.response.IntrospectResponse;
+import com.springjpa.demoJPA.entity.InvalidatedToken;
 import com.springjpa.demoJPA.entity.User;
 import com.springjpa.demoJPA.exception.AppException;
 import com.springjpa.demoJPA.exception.ErrorCode;
+import com.springjpa.demoJPA.repository.InvalidatedTokenRepository;
 import com.springjpa.demoJPA.repository.UserRepository;
 import com.springjpa.demoJPA.service.impl.IAuthenticationService;
 import lombok.AccessLevel;
@@ -30,6 +33,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,24 +41,23 @@ import java.util.StringJoiner;
 public class AuthenticationService implements IAuthenticationService {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
     UserRepository userRepository;
+    InvalidatedTokenRepository tokenRepository;
     PasswordEncoder passwordEncoder;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
-
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
-
+        boolean invalidated = true;
+        try {
+            verifyToken(token);
+        }catch (AppException e){
+            invalidated = false;
+        }
         return IntrospectResponse.builder()
-                .valid(verified && expiration.after(new Date()))
+                .valid(invalidated)
                 .build();
 
     }
@@ -71,6 +74,40 @@ public class AuthenticationService implements IAuthenticationService {
                 .authenticated(true)
                 .build();
     }
+
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        var signToken = verifyToken(request.getToken());
+
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+
+        tokenRepository.save(invalidatedToken);
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        if(!verified && expiration.after(new Date()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+
+        return signedJWT;
+    }
+
     private String generateToken(User user){
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -81,6 +118,7 @@ public class AuthenticationService implements IAuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
