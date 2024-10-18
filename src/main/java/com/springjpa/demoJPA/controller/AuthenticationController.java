@@ -1,10 +1,7 @@
 package com.springjpa.demoJPA.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.springjpa.demoJPA.dto.request.ApiResponse;
-import com.springjpa.demoJPA.dto.request.AuthenticationRequest;
-import com.springjpa.demoJPA.dto.request.IntrospectRequest;
-import com.springjpa.demoJPA.dto.request.LogoutRequest;
+import com.springjpa.demoJPA.dto.request.*;
 import com.springjpa.demoJPA.dto.response.AuthenticationResponse;
 import com.springjpa.demoJPA.dto.response.IntrospectResponse;
 import com.springjpa.demoJPA.service.AuthenticationService;
@@ -32,10 +29,20 @@ public class AuthenticationController {
                 .build();
     }
 
+
+
     @PostMapping("/logout")
     ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshRequest refreshRequest) throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(refreshRequest);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
                 .build();
     }
 
