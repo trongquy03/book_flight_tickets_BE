@@ -8,7 +8,7 @@ import com.springjpa.demoJPA.entity.User;
 import java.util.List;
 
 public interface IUserService {
-    User createUser(UserCreationRequest request);
+    UserResponse createUser(UserCreationRequest request);
     List<UserResponse> getUsers();
     UserResponse getUser(Long id);
     UserResponse getMyInfo();
