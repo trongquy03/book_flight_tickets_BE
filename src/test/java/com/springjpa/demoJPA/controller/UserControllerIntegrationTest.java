@@ -40,8 +40,8 @@ public class UserControllerIntegrationTest {
         registry.add("spring.datasource.url", mysqlContainer::getJdbcUrl);
         registry.add("spring.datasource.username", mysqlContainer::getUsername);
         registry.add("spring.datasource.password", mysqlContainer::getPassword);
-        registry.add("spring.datasource.driver-class-name", ()-> "com.mysql.cj.jdbc.Driver");
-        registry.add("spring.jpa.hibernate.ddl-auto", ()-> "update");
+        registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
     }
 
     @Autowired
@@ -51,7 +51,7 @@ public class UserControllerIntegrationTest {
     private LocalDate birthDate;
 
     @BeforeEach
-    void initData(){
+    void initData() {
         birthDate = LocalDate.of(1990, 1, 1);
 
         request = UserCreationRequest.builder()
@@ -72,7 +72,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    //
+        //
     void createUser_validRequest_success() throws Exception {
         // GIVEN
         ObjectMapper mapper = new ObjectMapper();
@@ -81,15 +81,15 @@ public class UserControllerIntegrationTest {
 
         // WHEN, THEN
         var response = mvc.perform(MockMvcRequestBuilders
-                .post("/users")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(content))
+                        .post("/users")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("result.username").value("john"))
                 .andExpect(MockMvcResultMatchers.jsonPath("result.firstName").value("quy"))
                 .andExpect(MockMvcResultMatchers.jsonPath("result.lastName").value("quy"))
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(0)
-        );
-        log.info("Result: {}",response.andReturn().getResponse().getContentAsString());
+                );
+        log.info("Result: {}", response.andReturn().getResponse().getContentAsString());
     }
 }
